@@ -10,7 +10,6 @@ class DocumentsController < ApplicationController
  GOOGLE_CLIENT_REDIRECT_URI = "http://localhost:3000/oauth2callback"
   # you better put constant like above in environments file, I have put it just for simplicity
   def list_google_docs
-    byebug
     google_doc = GoogleDrive::GoogleDocs.new(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,
                 GOOGLE_CLIENT_REDIRECT_URI)
     auth_client = google_doc.create_google_client
@@ -29,7 +28,6 @@ class DocumentsController < ApplicationController
   end
 
   def download_google_docs
-    byebug
     file_name = params[:doc_upload]
     file_name_session = GoogleDrive.login_with_oauth(session[:google_token])
     file_path = Rails.root.join('tmp', "doc_#{file_name_session}")
@@ -45,15 +43,13 @@ class DocumentsController < ApplicationController
     auth_token = oauth_client.auth_code.get_token(params[:code], 
                  :redirect_uri => GOOGLE_CLIENT_REDIRECT_URI)
 
-    byebug
+    
     session[:google_token] = auth_token.to_hash if auth_token
     redirect_to list_google_doc_path
   end
 
   def google_drive_login
-    byebug
     unless session[:google_token].present?
-      byebug
       google_drive = GoogleDrive::GoogleDocs.new(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,
                      GOOGLE_CLIENT_REDIRECT_URI)
       auth_url = google_drive.set_google_authorize_url
